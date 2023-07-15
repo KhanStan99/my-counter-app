@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
+
 body {
   margin: 12px;
-  background-color: black;
+  background-color: #000;
   color: white;
-  font-size: 28px;
+  font-family: 'Inter';
 }
