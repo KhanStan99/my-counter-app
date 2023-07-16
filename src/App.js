@@ -80,20 +80,16 @@ function App() {
 
           {moment(time).format("DD-MM-YYYY # hh:mm:ss a")}
 
-          <Button variant="contained" startIcon={<DeleteForeverIcon />}
+          <Button variant="contained"
             onClick={() => {
               test.splice(index, 1);
               localStorage.setItem("my_data", JSON.stringify(test));
               window.location.reload();
             }}
-            style={{ marginLeft: '12px', padding: '12px' }}>
-            Delete
-          </Button>
-          {/* <button
-            
-          ><DeleteForeverIcon /></button> */}
+            style={{ marginLeft: '12px', padding: '12px' }} ><DeleteForeverIcon /></Button>
         </div>
       })}
+      {test.length > 0 && <>Since last record:  {String(`${moment().diff(moment(test[test.length - 1]), duration)} ${duration}`)}</>}
     </div >
   );
 }
