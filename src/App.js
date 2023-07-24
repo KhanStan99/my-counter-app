@@ -15,11 +15,29 @@ function App() {
   const [duration, setDuration] = useState("hours")
   const [value, setValue] = useState(dayjs(moment()));
 
-  let test = [];
+  let data = [];
 
   if (localData) {
-    test = JSON.parse(localData);
+    data = JSON.parse(localData);
   }
+
+  const formattedData = [];
+  let average = 0;
+  data.forEach((item, index) => {
+    let lastTime = 0;
+    if (index >= 1) {
+      lastTime = moment(data[index]).diff(moment(data[index - 1]), duration);
+    }
+    formattedData.push({
+      dateTime: item,
+      lastTime
+    });
+    average = average + lastTime;
+  });
+
+  average = (average / formattedData.length).toFixed(1);
+
+  formattedData.reverse();
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '12px', }}>
@@ -55,41 +73,50 @@ function App() {
           />
         </LocalizationProvider>
         <button style={{ borderRadius: '12px', padding: '8px' }} onClick={() => {
-          test.push(value);
-          localStorage.setItem("my_data", JSON.stringify(test));
+          data.push(value);
+          localStorage.setItem("my_data", JSON.stringify(data));
           window.location.reload();
         }}>Add Now 😔</button>
       </div>
 
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        textAlign: 'center'
+      }}>
+        Average of {average} {duration}
+        <p>{data.length > 0 && <>Since last record:  {String(`${moment().diff(moment(data[data.length - 1]), duration)} ${duration}`)}</>}</p>
+      </div>
 
-      {test.length > 0 && test.map((time, index) => {
-        return <div key={time} style={{
-          width: '100%',
-          textAlign: 'center',
-          backgroundColor: "#000",
-          borderRadius: '180px',
-          margin: '12px',
-          padding: '12px',
-          boxShadow: 'rgb(128, 128, 128) 0px 0px 10px 3px'
-        }}>
-          {index >= 1 &&
-            <>
-              After {String(`${moment(test[index]).diff(moment(test[index - 1]), duration)} ${duration}`)}
-              <br />
-            </>}
+      {
+        formattedData.length > 0 && formattedData.map((time, index) => {
+          return <div key={time} style={{
+            width: '100%',
+            textAlign: 'center',
+            backgroundColor: "#000",
+            borderRadius: '180px',
+            margin: '12px',
+            padding: '12px',
+            boxShadow: 'rgb(128, 128, 128) 0px 0px 10px 3px'
+          }}>
+            {time.lastTime &&
+              <>
+                After {String(`${time.lastTime} ${duration}`)}
+                <br />
+              </>}
 
-          {moment(time).format("DD-MM-YYYY # hh:mm:ss a")}
+            {moment(time.dateTime).format("DD-MM-YYYY # hh:mm:ss a")}
 
-          <Button variant="contained"
-            onClick={() => {
-              test.splice(index, 1);
-              localStorage.setItem("my_data", JSON.stringify(test));
-              window.location.reload();
-            }}
-            style={{ marginLeft: '12px', padding: '12px' }} ><DeleteForeverIcon /></Button>
-        </div>
-      })}
-      {test.length > 0 && <>Since last record:  {String(`${moment().diff(moment(test[test.length - 1]), duration)} ${duration}`)}</>}
+            <Button variant="contained"
+              onClick={() => {
+                data.splice(index, 1);
+                localStorage.setItem("my_data", JSON.stringify(data));
+                window.location.reload();
+              }}
+              style={{ marginLeft: '12px', padding: '12px' }} ><DeleteForeverIcon /></Button>
+          </div>
+        })
+      }
     </div >
   );
 }
