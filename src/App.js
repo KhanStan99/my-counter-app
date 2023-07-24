@@ -37,8 +37,6 @@ function App() {
 
   average = (average / formattedData.length).toFixed(1);
 
-  formattedData.reverse();
-
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '12px', }}>
       <div>
@@ -84,7 +82,7 @@ function App() {
         flexDirection: 'column',
         textAlign: 'center'
       }}>
-        Average of {average} {duration}
+        {Number(average) ? <>Average of {average} {duration}</> : null}
         <p>{data.length > 0 && <>Since last record:  {String(`${moment().diff(moment(data[data.length - 1]), duration)} ${duration}`)}</>}</p>
       </div>
 
