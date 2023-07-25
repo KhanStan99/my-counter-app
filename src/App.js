@@ -25,9 +25,11 @@ function App() {
   let average = 0;
   data.forEach((item, index) => {
     let lastTime = 0;
+
     if (index >= 1) {
       lastTime = moment(data[index]).diff(moment(data[index - 1]), duration);
     }
+
     formattedData.push({
       dateTime: item,
       lastTime
@@ -35,7 +37,8 @@ function App() {
     average = average + lastTime;
   });
 
-  average = (average / formattedData.length).toFixed(1);
+
+  average = (average / (formattedData.length - 1)).toFixed(1);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '12px', }}>
@@ -88,7 +91,7 @@ function App() {
 
       {
         formattedData.length > 0 && formattedData.map((time, index) => {
-          return <div key={time} style={{
+          return <div key={index} style={{
             width: '100%',
             textAlign: 'center',
             backgroundColor: "#000",
@@ -97,11 +100,11 @@ function App() {
             padding: '12px',
             boxShadow: 'rgb(128, 128, 128) 0px 0px 10px 3px'
           }}>
-            {time.lastTime &&
+            {index > 0 ?
               <>
                 After {String(`${time.lastTime} ${duration}`)}
                 <br />
-              </>}
+              </> : null}
 
             {moment(time.dateTime).format("DD-MM-YYYY # hh:mm:ss a")}
 
