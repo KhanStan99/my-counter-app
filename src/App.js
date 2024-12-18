@@ -99,7 +99,7 @@ const InputSection = memo(({ duration, setDuration, addData }) => {
       textAlign={'center'}
     >
       <FormControl>
-        <FormLabel>Duration in:</FormLabel>
+        <FormLabel>Calculation in:</FormLabel>
         <RadioGroup
           row
           value={duration}
@@ -160,10 +160,6 @@ const Stats = memo(({ data, duration, removeData }) => {
   const lastLogged = sortedData[sortedData.length - 1];
   const firstLogged = sortedData[0];
   const timeSinceLastLogged = moment().diff(moment(lastLogged), duration);
-  const totalTimePassed = moment(lastLogged).diff(
-    moment(firstLogged),
-    duration
-  );
 
   const totalLogs = sortedData.length;
   const uniqueDates = new Set(
@@ -173,23 +169,19 @@ const Stats = memo(({ data, duration, removeData }) => {
 
   const result = [
     {
-      title: `Average ${duration} between habits`,
+      title: `average ${duration} between habits`,
       value: averageTimeBetweenHabits.toFixed(2),
     },
     {
-      title: `${duration} since last Logged`,
+      title: `${duration} since last entry`,
       value: timeSinceLastLogged.toFixed(2),
     },
     {
-      title: `${duration} since first Logged`,
+      title: `${duration} since first entry`,
       value: `${moment().diff(moment(firstLogged), duration)}`,
     },
-    {
-      title: `total ${duration} passed `,
-      value: totalTimePassed.toFixed(2),
-    },
-    { title: 'Total Logs', value: totalLogs },
-    { title: 'days with entries', value: daysWithEntries },
+    { title: 'total entries', value: totalLogs },
+    { title: 'unique days with entries', value: daysWithEntries },
   ];
 
   return (
@@ -207,7 +199,7 @@ const Stats = memo(({ data, duration, removeData }) => {
         flexDirection="row"
         flexWrap="wrap"
         gap={2}
-        justifyContent={'center'}
+        justifyContent="center"
       >
         {result.map((item) => (
           <Card display="flex" sx={{ textAlign: 'center' }} key={item.title}>
@@ -241,7 +233,7 @@ const Stats = memo(({ data, duration, removeData }) => {
               key={index}
               display="flex"
               flexDirection="row"
-              justifyContent={'space-between'}
+              justifyContent="space-between"
               textAlign="center"
               alignItems="center"
               gap={2}
