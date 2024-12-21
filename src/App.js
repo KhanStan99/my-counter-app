@@ -21,6 +21,12 @@ import {
   Radio,
   FormLabel,
 } from '@mui/material';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import UpgradeIcon from '@mui/icons-material/Upgrade';
+import DownloadIcon from '@mui/icons-material/Download';
+import EventIcon from '@mui/icons-material/Event';
+import RouteIcon from '@mui/icons-material/Route';
 
 const App = memo(() => {
   const [duration, setDuration] = useState('days');
@@ -156,10 +162,10 @@ const Stats = memo(({ data, duration, removeData }) => {
   const averageTimeBetweenHabits =
     timeDifferences.reduce((sum, diff) => sum + diff, 0) /
     (timeDifferences.length || 1);
+  const firstLogged = moment().diff(moment(sortedData[0]), duration, true);
 
   const lastLogged = sortedData[sortedData.length - 1];
-  const firstLogged = sortedData[0];
-  const timeSinceLastLogged = moment().diff(moment(lastLogged), duration);
+  const timeSinceLastLogged = moment().diff(moment(lastLogged), duration, true);
 
   const totalLogs = sortedData.length;
   const uniqueDates = new Set(
@@ -167,21 +173,31 @@ const Stats = memo(({ data, duration, removeData }) => {
   );
   const daysWithEntries = uniqueDates.size;
 
+  const longestGap = Math.max(...timeDifferences);
+
   const result = [
     {
-      title: `average ${duration} between habits`,
+      title: 'average',
       value: averageTimeBetweenHabits.toFixed(2),
+      icon: <FunctionsIcon />,
     },
     {
-      title: `${duration} since last entry`,
+      title: 'since last entry',
       value: timeSinceLastLogged.toFixed(2),
+      icon: <ScheduleIcon />,
     },
     {
-      title: `${duration} since first entry`,
-      value: `${moment().diff(moment(firstLogged), duration)}`,
+      title: 'since first entry',
+      value: firstLogged.toFixed(2),
+      icon: <UpgradeIcon />,
     },
-    { title: 'total entries', value: totalLogs },
-    { title: 'unique days with entries', value: daysWithEntries },
+    {
+      title: 'longest gap',
+      value: longestGap.toFixed(2),
+      icon: <DownloadIcon />,
+    },
+    { title: 'total entries', value: totalLogs, icon: <RouteIcon /> },
+    { title: 'unique days', value: daysWithEntries, icon: <EventIcon /> },
   ];
 
   return (
@@ -193,6 +209,7 @@ const Stats = memo(({ data, duration, removeData }) => {
       textAlign="center"
     >
       <Typography variant="h4">Stats</Typography>
+      <Typography variant="h5">in "{duration}"</Typography>
 
       <Box
         display="flex"
@@ -201,15 +218,19 @@ const Stats = memo(({ data, duration, removeData }) => {
         gap={2}
         justifyContent="center"
       >
-        {result.map((item) => (
-          <Card display="flex" sx={{ textAlign: 'center' }} key={item.title}>
+        {result.map(({ title, value, icon }) => (
+          <Card display="flex" sx={{ textAlign: 'center' }} key={title}>
             <CardActionArea>
               <CardContent>
                 <Typography gutterBottom variant="h5">
-                  {item.value}
+                  {value}
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {item.title}
+                <Typography
+                  variant="body2"
+                  gap={1}
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
+                  {icon} {title}
                 </Typography>
               </CardContent>
             </CardActionArea>
@@ -223,10 +244,11 @@ const Stats = memo(({ data, duration, removeData }) => {
         {data.map((time, index) => {
           let afterTime = '';
           if (index >= 1) {
-            afterTime = moment(data[index]).diff(
+            const diff = moment(data[index]).diff(
               moment(data[index - 1]),
-              duration
+              'milliseconds'
             );
+            afterTime = moment.duration(diff).as(duration).toFixed(2);
           }
           return (
             <Box
